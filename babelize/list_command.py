@@ -9,6 +9,8 @@ def get_files(filenames, language):
         f for f in filenames if f.lower().endswith(f'.{language}.md')
     ]
     return md_files, lang_files
+
+
 def do_list(args):
     if args.lang:
         print(f'Listing for {args.lang}')
