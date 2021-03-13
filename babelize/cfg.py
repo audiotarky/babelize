@@ -13,7 +13,11 @@ class Config:
 
     @property
     def root_dir(self):
-        return Path(self.cfg["root_dir"])
+        return Path(self.cfg['root_dir'])
+
+    @property
+    def dirs(self):
+        return [Path(d) for d in self.cfg.get('dirs', ['content'])]
 
 
 def load(path):

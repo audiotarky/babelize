@@ -22,6 +22,10 @@ def config_from_arg(path):
     raise argparse.ArgumentTypeError(error)
 
 
+def do_link(args):
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -35,6 +39,17 @@ def main():
         '-v', '--verbose', action='store_true', help='enable verbose output'
     )
 
+    subparsers = parser.add_subparsers()
+    subparsers.required = True
+    subparsers.dest = 'command'
+
+    link = subparsers.add_parser('link', aliases=['ln'])
+    link.set_defaults(run=do_link)
+
     args = parser.parse_args()
     cfg.init_logging(logging.DEBUG if args.verbose else logging.INFO)
-    return 0
+
+    if 'run' not in args:
+        print(args)
+
+    return args.run(args)
