@@ -12,3 +12,12 @@ python -m venv venv
 make dev
 pre-commit install
 ```
+
+## Use
+
+```
+babelize ls -l
+babelize ls -l ES
+babelize ls -l ES -d 3
+babelize ls -l ES -l DE
+```
