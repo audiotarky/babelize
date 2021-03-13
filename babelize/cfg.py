@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Config:
+
     def __init__(self, cfg):
         self.cfg = cfg
 
@@ -17,7 +18,9 @@ class Config:
 
     @property
     def dirs(self):
-        return [self.root_dir / Path(d) for d in self.cfg.get('dirs', ['content'])]
+        return [
+            self.root_dir / Path(d) for d in self.cfg.get('dirs', ['content'])
+        ]
 
 
 def load(path):

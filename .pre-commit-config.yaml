@@ -9,3 +9,11 @@ repos:
   rev: 5.5.2
   hooks:
     - id: isort
+
+-   repo: https://github.com/pre-commit/mirrors-yapf
+    rev: v0.30.0
+    hooks:
+    -   id: yapf
+        args: [--in-place, --parallel, --recursive, --style, .yapf-config]
+        files: "^(babelize)"
+        stages: [commit]
