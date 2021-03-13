@@ -3,6 +3,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+def get_files(filenames, language):
+    md_files = [f for f in filenames if f.lower().endswith('.md')]
+    lang_files = [
+        f for f in filenames if f.lower().endswith(f'.{language}.md')
+    ]
+    return md_files, lang_files
 def do_list(args):
     if args.lang:
         print(f'Listing for {args.lang}')
@@ -11,16 +17,15 @@ def do_list(args):
         for language in [lang.lower() for lang in args.lang]:
             for dirpath, dirnames, filenames in os.walk(d, followlinks=True):
                 dirpath_as_path = Path(dirpath)
-                md_files = [f for f in filenames if f.lower().endswith('.md')]
-                lang_files = [
-                    f for f in filenames
-                    if f.lower().endswith(f'.{language}.md')
-                ]
+
+                md_files, lang_files = get_files(filenames, language)
+
                 for file in [dirpath_as_path / Path(f) for f in md_files]:
                     short_file_path = file.relative_to(args.config.root_dir)
                     depth = len(short_file_path.parents) - args.depth - 1
                     if depth < 0:
                         depth = 0
+                    path = short_file_path.parents[depth].as_posix()
                     if len(file.suffixes) > 1:
                         continue
                     if f'{file.stem}.{language}.md' in lang_files:
@@ -33,24 +38,21 @@ def do_list(args):
                                     f'{short_file_path} has a'
                                     f' symlink for {language}'
                                 )
-                            counter[language][short_file_path.parents[depth].
-                                              as_posix()]['symlink'] += 1
+                            counter[language][path]['symlink'] += 1
                         else:
                             if args.verbose:
                                 print(
                                     f'{short_file_path} has a translation for'
                                     f'  {language}'
                                 )
-                            counter[language][short_file_path.parents[depth].
-                                              as_posix()]['translation'] += 1
+                            counter[language][path]['translation'] += 1
                     else:
                         if args.verbose:
                             print(
                                 f'{short_file_path} is missing a translation'
                                 f' or symlink for {language}'
                             )
-                        counter[language][short_file_path.parents[depth].
-                                          as_posix()]['missing'] += 1
+                        counter[language][path]['missing'] += 1
 
     spacing = 6
     if not args.verbose:
