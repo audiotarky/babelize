@@ -4,9 +4,8 @@
 import argparse
 import logging
 
-from babelize.list_command import do_list
-
-from . import cfg
+from . import cfg, content
+from .list_command import do_list
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +24,9 @@ def config_from_arg(path):
 
 
 def do_link(args):
+    symlinks = content.make_symlinks(args.config)
+    for s in symlinks:
+        print(s.absolute())
     return 0
 
 
@@ -45,26 +47,23 @@ def main():
     subparsers.required = True
     subparsers.dest = 'command'
 
-    link = subparsers.add_parser('link', aliases=['ln'])
-    link.set_defaults(run=do_link)
+    link_s = subparsers.add_parser('link', aliases=['ln'])
+    link_s.set_defaults(run=do_link)
 
-    list = subparsers.add_parser('list', aliases=['ls'])
-    list.set_defaults(run=do_list)
-    list.add_argument(
+    list_s = subparsers.add_parser('list', aliases=['ls'])
+    list_s.set_defaults(run=do_list)
+    list_s.add_argument(
         '--lang',
         '-l',
         help='Only list for selected language',
         action='append'
     )
-    list.add_argument(
+    list_s.add_argument(
         '--depth',
         '-d',
         type=int,
         help='Report at depth, default: %(default)s',
         default=2
-    )
-    list.add_argument(
-        '-v', '--verbose', action='store_true', help='enable verbose output'
     )
 
     args = parser.parse_args()
