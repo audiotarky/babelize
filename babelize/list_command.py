@@ -1,3 +1,5 @@
+# -*- coding: utf-8; mode:python -*-
+
 import os
 from collections import Counter, defaultdict
 from pathlib import Path

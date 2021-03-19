@@ -17,10 +17,21 @@ class Config:
         return Path(self.cfg['root_dir']).resolve()
 
     @property
+    def translations(self):
+        return self.cfg.get('translations', [])
+
+    @property
     def dirs(self):
         return [
-            self.root_dir / Path(d) for d in self.cfg.get('dirs', ['content'])
+            Path(self.root_dir, d) for d in self.cfg.get('dirs', ['content'])
         ]
+
+    def is_excluded(self, path, lang=None):
+        patterns = []
+        if lang is not None:
+            patterns = self.cfg.get(lang, {}).get('exclude', [])
+        patterns = patterns or self.cfg.get('exclude')
+        return any(path.match(p) for p in patterns)
 
 
 def load(path):
