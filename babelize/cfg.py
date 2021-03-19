@@ -18,7 +18,7 @@ class Config:
 
     @property
     def translations(self):
-        return self.cfg['translations']
+        return self.cfg.get('translations', [])
 
     @property
     def dirs(self):

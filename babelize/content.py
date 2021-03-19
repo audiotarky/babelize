@@ -2,6 +2,7 @@
 
 import logging
 import os
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 
@@ -16,9 +17,8 @@ class ContentFile:
         return self.__path
 
     @property
+    @lru_cache
     def translations(self):
-        # TODO - this might need caching as it could be very expensive
-        # for large amount of files.
         retval = {}
         for c in self.path.parent.iterdir():
             if c.is_dir():
@@ -40,8 +40,16 @@ class ContentFile:
         return str(self.__path)
 
 
-def make_symlinks(cfg):
+def make_symlinks(cfg, langs=None):
     retval = []
+    if langs is None:
+        if not cfg.translations:
+            raise ValueError('No language provided')
+        langs = cfg.translations
+
+    logger.debug(
+        "Symlinks will be created for languages: %s", ', '.join(langs)
+    )
     for p in cfg.dirs:
         logger.debug("Directory '%s'", p.relative_to(cfg.root_dir))
         for f in scan_content_at_dir(p):
@@ -50,7 +58,7 @@ def make_symlinks(cfg):
                     "File excluded: '%s'", f.path.relative_to(cfg.root_dir)
                 )
                 continue
-            for lang in cfg.translations:
+            for lang in langs:
                 symlink = f.make_symlink(lang)
                 if not symlink:
                     continue
