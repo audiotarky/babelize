@@ -32,7 +32,7 @@ def do_link(args):
 
 def do_need_update(args):
     for f in content.get_update_needed(args.config):
-        print(f.path.relative_to(args.config.root_dir))
+        print(f.relative_path)
     return 0
 
 
