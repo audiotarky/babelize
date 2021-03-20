@@ -14,11 +14,13 @@ def get_files(filenames, language):
 
 
 def do_list(args):
-    if args.lang:
-        print(f'Listing for {args.lang}')
+    langs = args.langs or args.config.translations
+    if not langs:
+        raise ValueError('No langs provided')
+    print(f'Listing for {langs}')
     counter = defaultdict(lambda: defaultdict(Counter))
     for d in args.config.dirs:
-        for language in [lang.lower() for lang in args.lang]:
+        for language in [lang.lower() for lang in langs]:
             for dirpath, dirnames, filenames in os.walk(d, followlinks=True):
                 dirpath_as_path = Path(dirpath)
 
