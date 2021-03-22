@@ -26,7 +26,13 @@ def config_from_arg(path):
 def do_link(args):
     symlinks = content.make_symlinks(args.config)
     for s in symlinks:
-        print(s.absolute())
+        print(s.relative_to(args.config.root_dir))
+    return 0
+
+
+def do_need_update(args):
+    for f in content.get_update_needed(args.config):
+        print(f.relative_path)
     return 0
 
 
@@ -50,12 +56,17 @@ def main():
     link_s = subparsers.add_parser('link', aliases=['ln'])
     link_s.set_defaults(run=do_link)
 
+    nu_s = subparsers.add_parser('need-update', aliases=['nu'])
+    nu_s.set_defaults(run=do_need_update)
+
     list_s = subparsers.add_parser('list', aliases=['ls'])
     list_s.set_defaults(run=do_list)
     list_s.add_argument(
         '--lang',
         '-l',
+        dest='langs',
         help='Only list for selected language',
+        default=[],
         action='append'
     )
     list_s.add_argument(
